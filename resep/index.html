@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jawarung</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="popup.css" />
+    <!-- <script defer src="popup.js"></script> -->
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">JA <span>warung</span></div>
+        <!-- Navbar -->
+        <nav class="navbar">
+            <a href="#">Beranda</a>
+            <a href="#">Produk</a>
+            <a href="#">Resep</a>
+            <a href="#">Promo</a>
+            <a href="#">Pengingat</a>
+            <a href="#">Favorit</a>
+        </nav>
+        <input type="text" placeholder="Cari Bahan Masakan/Resep" class="search-bar">
+        <button class="login-button">Masuk</button>
+        <button class="register-button">Daftar</button>
+    </header>
+
+    <!-- Carousel Section -->
+    <section class="carousel">
+        <img src="banner.jpg" alt="Banner Image" class="carousel-image">
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Resep Pilihan Section -->
+        <section class="resep-pilihan">
+            <h2>Resep Pilihan</h2>
+            <div class="card-container">
+                <div class="card">
+                    <img src="mie_gomak.jpg" alt="Mie Gomak">
+                    <h3>Mie Gomak</h3>
+                    <p>Lorem ipsum dolor sit amet...</p>
+                    <button>Selengkapnya</button>
+                </div>
+                <div class="card">
+                    <img src="soto.jpg" alt="Soto">
+                    <h3>Soto</h3>
+                    <p>Lorem ipsum dolor sit amet...</p>
+                    <button>Selengkapnya</button>
+                </div>
+                <div class="card">
+                    <img src="rendang.jpg" alt="Rendang">
+                    <h3>Rendang</h3>
+                    <p>Lorem ipsum dolor sit amet...</p>
+                    <button>Selengkapnya</button>
+                </div>
+                <div class="card">
+                    <img src="corndog.jpg" alt="Corndog">
+                    <h3>Corndog</h3>
+                    <p>Lorem ipsum dolor sit amet...</p>
+                    <button>Selengkapnya</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Terlaris Section -->
+        <section class="terlaris">
+            <h2>Terlaris</h2>
+            <div class="card-container">
+                <div class="card">
+                    <img src="gula_pasir.jpg" alt="Gula Pasir">
+                    <h3>Gula Pasir</h3>
+                    <p>Rp 10,000</p>
+                    <button>Selengkapnya</button>
+                </div>
+                <div class="card">
+                    <img src="minyak_goreng.jpg" alt="Minyak Goreng">
+                    <h3>Minyak Goreng</h3>
+                    <p>Rp 10,000</p>
+                    <button>Selengkapnya</button>
+                </div>
+                <!-- Tambahkan lebih banyak kartu jika diperlukan -->
+            </div>
+        </section>
+
+    </main>
+
+
+    <script src="script.js"></script>
+</body>
+<!-- Footer Section -->
+<footer class="footer">
+    <div class="footer-icons">
+        <div class="icon-item">
+            <img src="icon-pengantaran-cepat.png" alt="Pengantaran Cepat">
+            <p>Pengantaran Cepat</p>
+        </div>
+        <div class="icon-item">
+            <img src="icon-pembayaran-aman.png" alt="Pembayaran Aman">
+            <p>Pembayaran Aman</p>
+        </div>
+        <div class="icon-item">
+            <img src="icon-bahan-segar.png" alt="Bahan Segar">
+            <p>Bahan Segar</p>
+        </div>
+        <div class="icon-item">
+            <img src="icon-lebih-hemat.png" alt="Lebih Hemat">
+            <p>Lebih Hemat</p>
+        </div>
+    </div>
+    <div class="footer-content">
+        <div class="footer-brand">
+            <div class="logo">JA <span>warung</span></div>
+            <p>PT. HIGH DSD</p>
+            <p>0199-67-49-2, Teknoparkasi No.1,<br> Sukapura, Jawa, Kabupaten Bandung, Jawa Barat 40917</p>
+        </div>
+        <div class="footer-links">
+            <h3>Tentang Jawarung</h3>
+            <p>Pusat Bantuan</p>
+            <p>Pembayaran</p>
+            <p>Pengantaran</p>
+            <p>FAQ</p>
+        </div>
+        <div class="footer-contact">
+            <h3>Kontak</h3>
+            <p>Telp: (+62) 8999999999</p>
+            <p>Email: highdsd@gmail.com</p>
+            <div class="social-icons">
+                <img src="icon-instagram.png" alt="Instagram">
+                <img src="icon-tiktok.png" alt="TikTok">
+            </div>
+        </div>
+    </div>
+    <div id="popup-container">
+        <div id="popup" class="popup hidden">
+            <div class="popup-content">
+                <button class="close-button">&times;</button>
+                <h2>Masuk/Daftar untuk melanjutkan</h2>
+                <div class="tab">
+                    <button id="loginTab" class="tab-button active">Masuk</button>
+                    <button id="registerTab" class="tab-button">Daftar</button>
+                </div>
+                <!-- Form Login -->
+                <form id="loginForm" class="form">
+                    <input type="email" placeholder="Masukkan email" required />
+                    <input type="password" placeholder="Kata Sandi" required />
+                    <button type="submit" class="submit-button">Selanjutnya</button>
+                    <a href="#">Lupa password?</a>
+                </form>
+                <!-- Form Register -->
+                <form id="registerForm" class="form hidden">
+                    <input type="text" placeholder="Nama pengguna" required />
+                    <input type="email" placeholder="Masukkan email" required />
+                    <input type="password" placeholder="Kata Sandi" required />
+                    <button type="submit" class="submit-button">Buat akun</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link ke JavaScript Pop-up -->
+    <script src="popup.js" defer></script>
+</footer>
+
+</html>
