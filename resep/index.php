@@ -40,3 +40,15 @@ $result = $conn->query($query);
     </table>
 </body>
 </html>
+<!-- buat satu fitur
+ di customer menghitung riwayat perbulan dalam bentuk grafik
+ database produk dulu trus dikaitkan sama harganya
+ perbedaan antara kuantitas yang diperlukan di resep dengan kuantitas packaging aslinya
+ harga produk vs harga kebutuhan resep
+ 
+ ditulis bahannya yang dibutuhkan itu tersedianya yang ukuran berapa
+ 
+ kebutuhan data dari setiap fitur dinormalisasi
+
+ perhatiin satuan satuannya
+ -->

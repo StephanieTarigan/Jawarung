@@ -15,15 +15,19 @@ body {
 .header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 10px 20px;
     background-color: #4a7345;
     color: white;
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 1000; /* Ensures the header stays above other content */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow for separation */
-    padding: 15px 20px; /* Adjust padding as needed */
+    z-index: 1000;
+    /* Ensures the header stays above other content */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Optional: adds a subtle shadow for separation */
+    padding: 15px 20px;
+    /* Adjust padding as needed */
 }
 
 
@@ -43,8 +47,10 @@ body {
 
 /* Button Styling for Masuk and Daftar */
 .login-button {
-    background-color: #2c5c25; /* Green background */
-    color: #fff; /* White text */
+    background-color: #2c5c25;
+    /* Green background */
+    color: #fff;
+    /* White text */
     padding: 8px 16px;
     border: none;
     border-radius: 5px;
@@ -53,10 +59,13 @@ body {
 }
 
 .register-button {
-    background-color: #fff; /* White background */
-    color: #4a7345; /* Green text */
+    background-color: #fff;
+    /* White background */
+    color: #4a7345;
+    /* Green text */
     padding: 8px 16px;
-    border: 2px solid #4a7345; /* Green border */
+    border: 2px solid #4a7345;
+    /* Green border */
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
@@ -64,11 +73,13 @@ body {
 
 /* Hover effects for the buttons */
 .login-button:hover {
-    background-color: #1d4819; /* Slightly darker green */
+    background-color: #1d4819;
+    /* Slightly darker green */
 }
 
 .register-button:hover {
-    background-color: #f0f0f0; /* Light grey for hover */
+    background-color: #f0f0f0;
+    /* Light grey for hover */
 }
 
 .navbar a:hover {
@@ -125,7 +136,9 @@ body {
     padding-top: 20px;
 }
 
-.footer-brand, .footer-links, .footer-contact {
+.footer-brand,
+.footer-links,
+.footer-contact {
     max-width: 300px;
     text-align: left;
 }
@@ -136,13 +149,15 @@ body {
     color: #f5f5f5;
 }
 
-.footer-links h3, .footer-contact h3 {
+.footer-links h3,
+.footer-contact h3 {
     font-size: 18px;
     margin-bottom: 10px;
     color: #fff;
 }
 
-.footer-links p, .footer-contact p {
+.footer-links p,
+.footer-contact p {
     color: #a5a5a5;
     margin: 5px 0;
 }
@@ -151,4 +166,57 @@ body {
     width: 24px;
     height: 24px;
     margin: 0 8px;
+}
+
+.cart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    /* Tambahkan margin jika diperlukan */
+}
+
+.cart i {
+    font-size: 24px;
+    /* Atur ukuran ikon */
+    color: white;
+    /* Warna ikon */
+    cursor: pointer;
+    /* Tambahkan cursor pointer */
+    transition: transform 0.3s ease;
+    /* Animasi hover opsional */
+}
+
+.cart i:hover {
+    transform: scale(1.1);
+    /* Efek hover opsional */
+}
+
+/* Tambahkan badge keranjang jika diperlukan */
+.cart-badge {
+    position: relative;
+}
+
+.cart-badge::after {
+    content: '0';
+    /* Ganti dengan jumlah item di keranjang */
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+}
+
+.profile-section {
+    margin-left: auto;
+}
+
+.profile-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
 }
