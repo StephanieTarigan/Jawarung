@@ -1,0 +1,55 @@
+* {
+    font-family: "Trebuchet MS";
+  }
+  h1 {
+    text-transform: uppercase;
+    color: salmon;
+    text-align: center;
+  }
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+  }
+  .card {
+    border: 1px solid #DDEEEE;
+    border-radius: 10px;
+    width: 220px;  /* Ukuran card lebih kecil */
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .card img {
+    width: 100%; /* Menjaga gambar tetap ukuran seragam */
+    height: 150px; /* Tinggi gambar disamakan */
+    object-fit: cover; /* Gambar tetap proporsional */
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  .card h3 {
+    font-size: 16px;
+    color: #336B6B;
+    margin: 10px 0;
+  }
+  .card p {
+    font-size: 14px;
+    color: #333;
+    margin: 5px 0;
+  }
+  .card a {
+    display: inline-block;
+    background-color: salmon;
+    color: #fff;
+    padding: 6px 10px;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  .card a:hover {
+    background-color: #e66a6a;
+  }
