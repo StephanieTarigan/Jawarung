@@ -149,7 +149,7 @@
       <ul>
         <li><a href="#" class="active">Tentang Jawarung</a></li>
         <li><a href="#pusatbantuan">Pusat Bantuan</a></li>
-        <li><a href="beranda/beranda.php">Belanja</a></li>
+        <li><a href="beranda.php">Belanja</a></li>
         <li><a href="#">Resep</a></li>
       </ul>
     </nav>
@@ -163,7 +163,7 @@
         <p>Jawarung adalah platform untuk menemukan resep lezat dan membeli bahan makanan dengan mudah. Kami bertujuan untuk menyederhanakan pengalaman memasak Anda dengan menyediakan resep terperinci, cara mudah untuk berbelanja bahan-bahan, serta perkiraan harga dan informasi promo agar belanja lebih hemat.</p>
       </div>
       <div class="image">
-        <img src="foto/lpage.png" alt="Soto Ayam">
+        <img src="images/soto.png" alt="Soto Ayam">
       </div>
     </div>
 
