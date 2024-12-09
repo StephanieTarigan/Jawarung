@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btnSimpan'])) {
     $namaProduk = mysqli_real_escape_string($conn, $_POST["namaProduk"]);
     $deskripsiProduk = mysqli_real_escape_string($conn, $_POST["deskripsiProduk"]);
     $harga = (int)$_POST["harga"];
-    $warungID = (int)$_POST["warungID"];
+    $WarungID = (int)$_POST["WarungID"];
 
     // Validasi jika ada foto yang diupload
     $fotoPaths = [];
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btnSimpan'])) {
     // Menyimpan produk ke database jika tidak ada error pada upload foto
     if (!isset($errMsg)) {
         $sqlStatement = "INSERT INTO produk (NamaProduk, DeskripsiProduk, Harga, WarungID) 
-                         VALUES ('$namaProduk', '$deskripsiProduk', '$harga', '$warungID')";
+                         VALUES ('$namaProduk', '$deskripsiProduk', '$harga', '$WarungID')";
         $query = mysqli_query($conn, $sqlStatement);
 
         if ($query) {
@@ -69,6 +69,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btnSimpan'])) {
             $errMsg = "Gagal menyimpan data produk! " . mysqli_error($conn);
         }
     }
+}
+
+$warungQuery = "SELECT WarungID, NamaWarung FROM warung";
+$warungResult = mysqli_query($conn, $warungQuery);
+if (!$warungResult) {
+    die("Query gagal: " . mysqli_error($conn));
 }
 
 // Menutup koneksi database
@@ -98,8 +104,15 @@ include "../template/main_layout.php";
             <input type="number" class="form-control" id="harga" name="harga" required>
         </div>
         <div class="mb-3">
-            <label for="warungID" class="form-label">Warung ID</label>
-            <input type="number" class="form-control" id="warungID" name="warungID" required>
+            <label for="WarungID" class="form-label">ID Warung</label>
+            <select class="form-control" id="WarungID" name="WarungID" required>
+                <option value="">Pilih Warung</option>
+                <?php while ($warung = mysqli_fetch_assoc($warungResult)): ?>
+                    <option value="<?= htmlspecialchars($warung['WarungID']) ?>">
+                        <?= htmlspecialchars($warung['WarungID']) . ' - ' . htmlspecialchars($warung['NamaWarung']) ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
         </div>
         <div class="mb-3">
             <label for="fotoProduk" class="form-label">Foto Produk</label>
@@ -110,5 +123,3 @@ include "../template/main_layout.php";
 </div>
 
 <?php include "../template/main_footer.php"; ?>
-
-

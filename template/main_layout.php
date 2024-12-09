@@ -39,6 +39,7 @@ if (isset($_SESSION['valid'])) {
             <a href="beranda.php">Beranda</a>
             <a href="add_produk.php">Produk</a>
             <a href="add_resep.php">Resep</a>
+            <a href="add_warung.php">Warung</a>
             <a href="#">Pengingat</a>
         </nav>
         <input type="text" placeholder="Cari Bahan Masakan/Resep" class="search-bar">

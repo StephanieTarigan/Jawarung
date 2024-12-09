@@ -20,6 +20,7 @@ define('HOST', "http://localhost/webPro2024/jawarung")
             <a href="beranda.php">Beranda</a>
             <a href="produk.php">Produk</a>
             <a href="resep.php">Resep</a>
+            <a href="warung.php">Warung</a>
             <a href="pengingat.php">Pengingat</a>
         </nav>
         <input type="text" placeholder="Cari Bahan Masakan/Resep" class="search-bar">

@@ -102,3 +102,5 @@ if (!isset($_SESSION['valid'])) {
 <?php include "../template/main_footer.php"; ?>
 
 </html>
+
+<!-- nambahin rikot di tabel warung  -->
