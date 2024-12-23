@@ -2,6 +2,14 @@
 <link rel="stylesheet" href="../style.css">
 
 <?php
+// Memulai sesi
+session_start();
+
+// Memeriksa apakah pengguna sudah login dan apakah perannya adalah admin
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: /login.php"); // Arahkan ke halaman login jika bukan admin
+    exit();
+}
 // Menghubungkan ke file konfigurasi database
 include "../dbconfig.php";
 
@@ -77,11 +85,9 @@ if (!$warungResult) {
     die("Query gagal: " . mysqli_error($conn));
 }
 
-// Menutup koneksi database
-mysqli_close($conn);
 
 // Memasukkan template header
-include "../template/main_layout.php";
+include ("../template/main_layout.php");
 ?>
 
 <!-- Bagian tampilan HTML untuk form -->
@@ -123,3 +129,7 @@ include "../template/main_layout.php";
 </div>
 
 <?php include "../template/main_footer.php"; ?>
+<?php
+// Menutup koneksi database
+mysqli_close($conn);
+?>

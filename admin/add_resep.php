@@ -2,6 +2,14 @@
 <link rel="stylesheet" href="../style.css">
 
 <?php
+// Memulai sesi
+session_start();
+
+// Memeriksa apakah pengguna sudah login dan apakah perannya adalah admin
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: /login.php"); // Arahkan ke halaman login jika bukan admin
+    exit();
+}
 // Menghubungkan ke file konfigurasi database
 include "../dbconfig.php";
 
@@ -71,9 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btnSimpan'])) {
     }
 }
 
-// Menutup koneksi database
-mysqli_close($conn);
-
 // Memasukkan template header
 include "../template/main_layout.php";
 ?>
@@ -112,3 +117,7 @@ include "../template/main_layout.php";
 <?php include "../template/main_footer.php"; ?>
 
 
+<?php
+// Menutup koneksi database
+mysqli_close($conn);
+?>

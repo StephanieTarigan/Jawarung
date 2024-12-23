@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("dbconfig.php");
+include "../dbconfig.php";
 
 // Periksa apakah sesi valid
 if (!isset($_SESSION['valid']) || !isset($_SESSION['UserID'])) {
@@ -9,7 +9,7 @@ if (!isset($_SESSION['valid']) || !isset($_SESSION['UserID'])) {
     exit();
 }
 
-include("template/main_layout.php");
+include "../template/main_layout.php";
 
 // Ambil ID pengguna dari session
 $id = $_SESSION['UserID'];
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
 // Proses update data pengguna dan pelanggan
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     // Ambil dan sanitasi data input
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $Username = mysqli_real_escape_string($conn, $_POST['Username']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $role = mysqli_real_escape_string($conn, $_POST['role']);
     $alamat = mysqli_real_escape_string($conn, $_POST['alamat']);
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
     // Update data pengguna di tabel users
     $stmt = $conn->prepare("UPDATE users SET Username=?, Email=?, role=?, Alamat=?, Kabupaten=?, Kota=?, Kecamatan=?, KodePos=? WHERE UserID=?");
-    $stmt->bind_param("ssssssssi", $username, $email, $role, $alamat, $kabupaten, $kota, $kecamatan, $kodepos, $id);
+    $stmt->bind_param("ssssssssi", $Username, $email, $role, $alamat, $kabupaten, $kota, $kecamatan, $kodepos, $id);
 
     if ($stmt->execute()) {
         echo "<div class='messrole'>
@@ -114,21 +114,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             <header>Change Profile</header>
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="field input">
-                    <label for="username">Username</label>
-                    <input type="text" name="username" id="username" value="<?php echo htmlspecialchars($res_Uname); ?>" autocomplete="off" required>
+                    <label for="Username">Username</label>
+                    <input type="text" name="Username" id="Username" value="<?php echo htmlspecialchars($res_Uname); ?>" autocomplete="off" required>
                 </div>
 
                 <div class="field input">
                     <label for="email">Email</label>
                     <input type="email" name="email" id="email" value="<?php echo htmlspecialchars($res_Email); ?>" autocomplete="off" required>
-                </div>
-
-                <div class="field input">
-                    <label for="role">Role</label>
-                    <select name="role" id="role" required>
-                        <option value="admin" <?php if ($res_role == 'admin') echo 'selected'; ?>>Admin</option>
-                        <option value="user" <?php if ($res_role == 'user') echo 'selected'; ?>>User</option>
-                    </select>
                 </div>
 
                 <div class="field input">

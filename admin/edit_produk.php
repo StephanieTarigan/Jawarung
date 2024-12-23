@@ -2,6 +2,14 @@
 <link rel="stylesheet" href="../style.css">
 
 <?php
+// Memulai sesi
+session_start();
+
+// Memeriksa apakah pengguna sudah login dan apakah perannya adalah admin
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: /login.php"); // Arahkan ke halaman login jika bukan admin
+    exit();
+}
 include "../dbconfig.php"; // Pastikan koneksi database sudah benar
 
 // Jika tombol Simpan ditekan
@@ -23,9 +31,6 @@ if (isset($_POST['btnSimpan'])) {
     } else {
         $errMsg = "Pengubahan data produk dengan ID " . $produkID . " GAGAL !" . mysqli_error($conn); // Menampilkan pesan error
     }
-
-    // Menutup koneksi
-    mysqli_close($conn);
 }
 
 /** Cari produk */
@@ -129,4 +134,7 @@ if (isset($errMsg)) {
 
 <?php
 include "../template/main_footer.php"; // Menutup footer template
+// Menutup koneksi database
+mysqli_close($conn);
 ?>
+
