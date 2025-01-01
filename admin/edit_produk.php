@@ -1,140 +1,107 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="../style.css">
-
 <?php
-// Memulai sesi
 session_start();
+include "../dbconfig.php";
 
-// Memeriksa apakah pengguna sudah login dan apakah perannya adalah admin
+// Memeriksa apakah pengguna sudah login dan admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: /login.php"); // Arahkan ke halaman login jika bukan admin
+    header("Location: /login.php");
     exit();
 }
-include "../dbconfig.php"; // Pastikan koneksi database sudah benar
 
-// Jika tombol Simpan ditekan
-if (isset($_POST['btnSimpan'])) {
-    $produkID = $_POST["ProdukID"];
-    $namaProduk = $_POST["NamaProduk"];
-    $deskripsiProduk = $_POST["DeskripsiProduk"];
-    $harga = $_POST["Harga"];
-    $warungID = $_POST["WarungID"];
+// Mendapatkan data produk berdasarkan ProdukID
+if (isset($_GET['ProdukID'])) {
+    $produkID = (int)$_GET['ProdukID'];
+    $sqlProduk = "SELECT * FROM produk WHERE ProdukID = $produkID";
+    $resultProduk = $conn->query($sqlProduk);
+    if ($resultProduk->num_rows === 0) {
+        die("Produk tidak ditemukan.");
+    }
+    $produk = $resultProduk->fetch_assoc();
+} else {
+    die("ProdukID tidak ditemukan.");
+}
 
-    // Query untuk memperbarui data produk
-    $sqlStatement = "UPDATE produk SET NamaProduk='$namaProduk', DeskripsiProduk='$deskripsiProduk', Harga='$harga', WarungID='$warungID' WHERE ProdukID='$produkID'";
-    $query = mysqli_query($conn, $sqlStatement);
+// Mendapatkan data untuk dropdown
+$warungResult = $conn->query("SELECT WarungID, NamaWarung FROM warung");
+$satuanResult = $conn->query("SELECT SatuanID, NamaSatuan FROM satuan");
 
-    // Jika query berhasil
-    if ($query) {
-        $succesMsg = "Pengubahan data produk dengan ID " . $produkID . " berhasil";
-        header("location:index.php?successMsg=$succesMsg"); // Arahkan ke halaman index.php dengan pesan sukses
+// Proses update produk
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $namaProduk = $conn->real_escape_string($_POST["namaProduk"]);
+    $deskripsiProduk = $conn->real_escape_string($_POST["deskripsiProduk"]);
+    $harga = (float)$_POST["harga"];
+    $WarungID = (int)$_POST["WarungID"];
+    $SatuanID = (int)$_POST["SatuanID"];
+    $Stock = (int)$_POST["Stock"];
+
+    $sqlUpdate = "UPDATE produk SET NamaProduk='$namaProduk', DeskripsiProduk='$deskripsiProduk', Harga=$harga, WarungID=$WarungID, SatuanID=$SatuanID, Stock=$Stock WHERE ProdukID=$produkID";
+    if ($conn->query($sqlUpdate)) {
+        header("Location: index.php?successMsg=Produk berhasil diperbarui.");
+        exit();
     } else {
-        $errMsg = "Pengubahan data produk dengan ID " . $produkID . " GAGAL !" . mysqli_error($conn); // Menampilkan pesan error
+        $errMsg = "Gagal memperbarui produk: " . $conn->error;
     }
 }
-
-/** Cari produk */
-$produkID = $_GET['ProdukID'];
-$sqlStatement = "SELECT * FROM produk WHERE ProdukID='$produkID'";
-$query = mysqli_query($conn, $sqlStatement);
-$row = mysqli_fetch_assoc($query);
-
-// Ambil data warung untuk dropdown
-$sqlStatement = "SELECT * FROM warung";
-$query = mysqli_query($conn, $sqlStatement);
-$dtwarung = mysqli_fetch_all($query, MYSQLI_ASSOC);
-
-include "../template/main_layout.php";
+include("../template/main_layout.php");
 ?>
-<div class="row mt-3 mb-4">
-    <div class="col-md-6">
-        <h4>Update Produk Data</h4>
-    </div>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Produk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h4>Edit Produk</h4>
+        <?php if (isset($errMsg)): ?>
+            <div class="alert alert-danger"><?= htmlspecialchars($errMsg) ?></div>
+        <?php endif; ?>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="namaProduk" class="form-label">Nama Produk</label>
+                <input type="text" class="form-control" id="namaProduk" name="namaProduk" value="<?= htmlspecialchars($produk['NamaProduk']) ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="deskripsiProduk" class="form-label">Deskripsi Produk</label>
+                <textarea class="form-control" id="deskripsiProduk" name="deskripsiProduk" required><?= htmlspecialchars($produk['DeskripsiProduk']) ?></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="harga" class="form-label">Harga</label>
+                <input type="number" class="form-control" id="harga" name="harga" value="<?= htmlspecialchars($produk['Harga']) ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="WarungID" class="form-label">Warung</label>
+                <select class="form-select" id="WarungID" name="WarungID" required>
+                    <?php while ($warung = $warungResult->fetch_assoc()): ?>
+                        <option value="<?= $warung['WarungID'] ?>" <?= $produk['WarungID'] == $warung['WarungID'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($warung['NamaWarung']) ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="SatuanID" class="form-label">Satuan</label>
+                <select class="form-select" id="SatuanID" name="SatuanID" required>
+                    <?php while ($satuan = $satuanResult->fetch_assoc()): ?>
+                        <option value="<?= $satuan['SatuanID'] ?>" <?= $produk['SatuanID'] == $satuan['SatuanID'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($satuan['NamaSatuan']) ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+            <div class="mb-3">
+    <label for="Stock" class="form-label">Stok Produk</label>
+    <input type="number" class="form-control" id="Stock" name="Stock" 
+           value="<?= htmlspecialchars($produk['Stock'] ?? 0) ?>" 
+           min="0" required>
 </div>
 
-<?php
-// Jika ada error, tampilkan pesan error
-if (isset($errMsg)) {
-?>
-    <div class="alert alert-danger" role="alert">
-        <?= $errMsg ?>
+            <button type="submit" class="btn btn-success">Simpan</button>
+            <a href="index.php" class="btn btn-secondary">Kembali</a>
+        </form>
     </div>
-<?php
-}
-?>
-
-<form method="post">
-    <!-- ProdukID -->
-    <div class="mb-1 row">
-        <div class="col-2">
-            <label for="ProdukID" class="col-form-label">Produk ID</label>
-        </div>
-        <div class="col-auto">
-            <input type="text" class="form-control" id="ProdukID" name="ProdukID" size="10" disabled value="<?= $row["ProdukID"] ?>" required>
-        </div>
-    </div>
-
-    <!-- Nama Produk -->
-    <div class="mb-1 row">
-        <div class="col-2">
-            <label for="NamaProduk" class="col-form-label">Nama Produk</label>
-        </div>
-        <div class="col-auto">
-            <input type="text" class="form-control" id="NamaProduk" name="NamaProduk" value="<?= $row["NamaProduk"] ?>" required>
-        </div>
-    </div>
-
-    <!-- Deskripsi Produk -->
-    <div class="mb-1 row">
-        <div class="col-2">
-            <label for="DeskripsiProduk" class="col-form-label">Deskripsi Produk</label>
-        </div>
-        <div class="col-auto">
-            <textarea class="form-control" id="DeskripsiProduk" name="DeskripsiProduk"><?= $row["DeskripsiProduk"] ?></textarea>
-        </div>
-    </div>
-
-    <!-- Harga -->
-    <div class="mb-1 row">
-        <div class="col-2">
-            <label for="Harga" class="col-form-label">Harga</label>
-        </div>
-        <div class="col-auto">
-            <input type="number" class="form-control" id="Harga" name="Harga" value="<?= $row["Harga"] ?>" required>
-        </div>
-    </div>
-
-    <!-- Warung ID -->
-    <div class="mb-1 row">
-        <div class="col-2">
-            <label for="WarungID" class="col-form-label">Warung</label>
-        </div>
-        <div class="col-auto">
-            <select class="form-select" aria-label="Warung Select" name="WarungID">
-                <option selected><?= $row["WarungID"] ?></option>
-                <?php
-                foreach ($dtwarung as $key => $warung) {
-                ?>
-                    <option value="<?= $warung["WarungID"] ?>"><?= $warung["NamaWarung"] ?></option>
-                <?php } ?>
-            </select>
-        </div>
-    </div>
-
-    <!-- Tombol Simpan dan Reset -->
-    <div class="mt-4 row">
-        <div class="col-auto">
-            <input type="hidden" name="ProdukID" value="<?= $row["ProdukID"] ?>">
-            <input type="submit" class="btn btn-success" name="btnSimpan" value="Simpan">
-            <input type="reset" class="btn btn-danger" value="Ulangi">
-            <a href="<?= HOST . "/produk/" ?>" class="btn btn-secondary">Kembali</a>
-        </div>
-    </div>
-</form>
-
-<?php
-include "../template/main_footer.php"; // Menutup footer template
-// Menutup koneksi database
-mysqli_close($conn);
-?>
-
+</body>
+</html>

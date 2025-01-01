@@ -69,31 +69,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btnSimpan'])) {
         }
 
         // Menyimpan produk ke database jika tidak ada error pada upload foto
-        if (!isset($errMsg)) {
-            $sqlStatement = "INSERT INTO produk (NamaProduk, DeskripsiProduk, Harga, WarungID, SatuanID) 
-                             VALUES ('$namaProduk', '$deskripsiProduk', '$harga', '$WarungID', '$SatuanID', '$stock')";
-            $query = mysqli_query($conn, $sqlStatement);
+        // Menyimpan produk ke database jika tidak ada error pada upload foto
+if (!isset($errMsg)) {
+    // Tambahkan kolom stock dalam daftar kolom INSERT
+    $sqlStatement = "INSERT INTO produk (NamaProduk, DeskripsiProduk, Harga, WarungID, SatuanID, stock) 
+                     VALUES ('$namaProduk', '$deskripsiProduk', '$harga', '$WarungID', '$SatuanID', '$stock')";
+    $query = mysqli_query($conn, $sqlStatement);
 
-            if ($query) {
-                $produkID = mysqli_insert_id($conn);
+    if ($query) {
+        $produkID = mysqli_insert_id($conn);
 
-                foreach ($fotoPaths as $fotoPath) {
-                    $sqlFoto = "INSERT INTO fotoproduk (ProdukID, FotoPath) 
-                                VALUES ('$produkID', '$fotoPath')";
-                    if (!mysqli_query($conn, $sqlFoto)) {
-                        $errMsg = "Gagal menyimpan foto produk! " . mysqli_error($conn);
-                        break;
-                    }
-                }
-
-                if (!isset($errMsg)) {
-                    header("Location: index.php?successMsg=Produk berhasil ditambahkan.");
-                    exit;
-                }
-            } else {
-                $errMsg = "Gagal menyimpan data produk! " . mysqli_error($conn);
+        foreach ($fotoPaths as $fotoPath) {
+            $sqlFoto = "INSERT INTO fotoproduk (ProdukID, FotoPath) 
+                        VALUES ('$produkID', '$fotoPath')";
+            if (!mysqli_query($conn, $sqlFoto)) {
+                $errMsg = "Gagal menyimpan foto produk! " . mysqli_error($conn);
+                break;
             }
         }
+
+        if (!isset($errMsg)) {
+            header("Location: index.php?successMsg=Produk berhasil ditambahkan.");
+            exit;
+        }
+    } else {
+        $errMsg = "Gagal menyimpan data produk! " . mysqli_error($conn);
+    }
+}
+
     }
 }
 
