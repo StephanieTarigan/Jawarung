@@ -66,17 +66,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Simpan langkah memasak
-if (!empty($_POST['langkah'])) {
-    foreach ($_POST['langkah'] as $nomor => $deskripsiLangkah) {
-        $deskripsiLangkah = $conn->real_escape_string($deskripsiLangkah);
-        $nomorLangkah = $nomor + 1; // Nomor langkah dimulai dari 1
 
-        $stmt = $conn->prepare("INSERT INTO langkahMemasak (ResepID, NomorLangkah, DeskripsiLangkah) VALUES (?, ?, ?)");
-        $stmt->bind_param("iis", $resepID, $nomorLangkah, $deskripsiLangkah);
-        $stmt->execute();
-    }
-}
+        // Simpan langkah memasak
+        if (!empty($_POST['langkah'])) {
+            foreach ($_POST['langkah'] as $nomor => $deskripsiLangkah) {
+                $deskripsiLangkah = $conn->real_escape_string($deskripsiLangkah);
+                $nomorLangkah = $nomor + 1; // Nomor langkah dimulai dari 1
+
+                $stmt = $conn->prepare("INSERT INTO langkahMemasak (ResepID, NomorLangkah, DeskripsiLangkah) VALUES (?, ?, ?)");
+                $stmt->bind_param("iis", $resepID, $nomorLangkah, $deskripsiLangkah);
+                $stmt->execute();
+            }
+        }
 
 
         // Simpan Perkiraan Harga
@@ -89,21 +90,21 @@ if (!empty($_POST['langkah'])) {
         $perkiraanHargaID = $stmt->insert_id;
 
         // Simpan kategori resep
-$stmt = $conn->prepare("INSERT INTO kategoriResep (ResepID, AsalMasakanID, JenisHidanganID, WaktuMemasakID, PerkiraanHargaID) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("iiiii", $resepID, $asalMasakanID, $jenisHidanganID, $waktuMemasakID, $perkiraanHargaID);
-$stmt->execute();
-
-// Simpan langkah memasak
-if (!empty($_POST['langkah'])) {
-    foreach ($_POST['langkah'] as $index => $deskripsiLangkah) {
-        $deskripsiLangkah = $conn->real_escape_string($deskripsiLangkah);
-        $nomorLangkah = $index + 1;
-
-        $stmt = $conn->prepare("INSERT INTO langkahmemasak (ResepID, NomorLangkah, DeskripsiLangkah) VALUES (?, ?, ?)");
-        $stmt->bind_param("iis", $resepID, $nomorLangkah, $deskripsiLangkah);
+        $stmt = $conn->prepare("INSERT INTO kategoriResep (ResepID, AsalMasakanID, JenisHidanganID, WaktuMemasakID, PerkiraanHargaID) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("iiiii", $resepID, $asalMasakanID, $jenisHidanganID, $waktuMemasakID, $perkiraanHargaID);
         $stmt->execute();
-    }
-}
+
+        // Simpan langkah memasak
+        if (!empty($_POST['langkah'])) {
+            foreach ($_POST['langkah'] as $index => $deskripsiLangkah) {
+                $deskripsiLangkah = $conn->real_escape_string($deskripsiLangkah);
+                $nomorLangkah = $index + 1;
+
+                $stmt = $conn->prepare("INSERT INTO langkahmemasak (ResepID, NomorLangkah, DeskripsiLangkah) VALUES (?, ?, ?)");
+                $stmt->bind_param("iis", $resepID, $nomorLangkah, $deskripsiLangkah);
+                $stmt->execute();
+            }
+        }
 
 
         // Simpan foto resep

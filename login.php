@@ -7,7 +7,7 @@ if (isset($_SESSION['valid'])) {
     if ($role === 'admin') {
         header("Location: ../admin/beranda.php");
     } else {
-        header("Location: ../user/index.php");
+        header("Location: ../user/beranda.php");
     }
     exit();
 }
