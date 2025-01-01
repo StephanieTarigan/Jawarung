@@ -12,9 +12,9 @@ $query = mysqli_query($conn, $sqlStatement);
 
 // Cek apakah query berhasil
 if ($query) {
-    // Jika berhasil, buat pesan sukses dan alihkan ke halaman lain (misalnya index.php)
+    // Jika berhasil, buat pesan sukses dan alihkan ke halaman lain (misalnya indexProduk.php)
     $succesMsg = "Penghapusan produk dengan ID " . $produkID . " berhasil";
-    header("location:index.php?successMsg=$succesMsg");
+    header("location:indexProduk.php?successMsg=$succesMsg");
 } else {
     // Jika gagal, tampilkan pesan error
     echo "Gagal menghapus produk: " . mysqli_error($conn);

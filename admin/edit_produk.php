@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $sqlUpdate = "UPDATE produk SET NamaProduk='$namaProduk', DeskripsiProduk='$deskripsiProduk', Harga=$harga, WarungID=$WarungID, SatuanID=$SatuanID, Stock=$Stock WHERE ProdukID=$produkID";
     if ($conn->query($sqlUpdate)) {
-        header("Location: index.php?successMsg=Produk berhasil diperbarui.");
+        header("Location: indexProduk.php?successMsg=Produk berhasil diperbarui.");
         exit();
     } else {
         $errMsg = "Gagal memperbarui produk: " . $conn->error;
@@ -100,7 +100,7 @@ include("../template/main_layout.php");
 </div>
 
             <button type="submit" class="btn btn-success">Simpan</button>
-            <a href="index.php" class="btn btn-secondary">Kembali</a>
+            <a href="indexProduk.php" class="btn btn-secondary">Kembali</a>
         </form>
     </div>
 </body>

@@ -66,6 +66,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        // Simpan langkah memasak
+if (!empty($_POST['langkah'])) {
+    foreach ($_POST['langkah'] as $nomor => $deskripsiLangkah) {
+        $deskripsiLangkah = $conn->real_escape_string($deskripsiLangkah);
+        $nomorLangkah = $nomor + 1; // Nomor langkah dimulai dari 1
+
+        $stmt = $conn->prepare("INSERT INTO langkahMemasak (ResepID, NomorLangkah, DeskripsiLangkah) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $resepID, $nomorLangkah, $deskripsiLangkah);
+        $stmt->execute();
+    }
+}
+
+
         // Simpan Perkiraan Harga
         if ($hargaMin === PHP_INT_MAX) $hargaMin = 0; // Jika tidak ada bahan
         if ($hargaMax === PHP_INT_MIN) $hargaMax = 0;
@@ -76,9 +89,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $perkiraanHargaID = $stmt->insert_id;
 
         // Simpan kategori resep
-        $stmt = $conn->prepare("INSERT INTO kategoriResep (ResepID, AsalMasakanID, JenisHidanganID, WaktuMemasakID, PerkiraanHargaID) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("iiiii", $resepID, $asalMasakanID, $jenisHidanganID, $waktuMemasakID, $perkiraanHargaID);
+$stmt = $conn->prepare("INSERT INTO kategoriResep (ResepID, AsalMasakanID, JenisHidanganID, WaktuMemasakID, PerkiraanHargaID) VALUES (?, ?, ?, ?, ?)");
+$stmt->bind_param("iiiii", $resepID, $asalMasakanID, $jenisHidanganID, $waktuMemasakID, $perkiraanHargaID);
+$stmt->execute();
+
+// Simpan langkah memasak
+if (!empty($_POST['langkah'])) {
+    foreach ($_POST['langkah'] as $index => $deskripsiLangkah) {
+        $deskripsiLangkah = $conn->real_escape_string($deskripsiLangkah);
+        $nomorLangkah = $index + 1;
+
+        $stmt = $conn->prepare("INSERT INTO langkahmemasak (ResepID, NomorLangkah, DeskripsiLangkah) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $resepID, $nomorLangkah, $deskripsiLangkah);
         $stmt->execute();
+    }
+}
+
 
         // Simpan foto resep
         if (isset($_FILES['FotoResep']['name']) && !empty($_FILES['FotoResep']['name'][0])) {
@@ -111,6 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "Gagal menyimpan resep: " . $e->getMessage();
     }
 }
+
 
 ?>
 
@@ -149,10 +176,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- Foto Resep -->
-            <div class="mb-3">
-                <label for="FotoResep" class="form-label">Foto Resep</label>
-                <input type="file" class="form-control" id="FotoResep" name="FotoResep[]" multiple>
+            <div id="photo-container">
+                <div class="mb-3 d-flex align-items-center photo-item">
+                    <input type="file" class="form-control me-2 photo-input" name="FotoResep[]" accept="image/*" required>
+                    <button type="button" class="btn btn-danger remove-photo">Hapus</button>
+                </div>
             </div>
+
+            <div id="photo-preview" class="mt-3"></div>
+            <button type="button" id="add-photo" class="btn btn-secondary mb-3">Tambah Foto</button>
+
+
 
             <!-- Langkah Memasak -->
             <h5>Langkah Memasak</h5>
@@ -217,6 +251,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
+        // Tambah Foto
+        document.getElementById('add-photo').addEventListener('click', () => {
+            const photoContainer = document.getElementById('photo-container');
+            const newPhoto = `
+        <div class="mb-3 d-flex align-items-center photo-item">
+            <input type="file" class="form-control me-2 photo-input" name="FotoResep[]" accept="image/*" required>
+            <button type="button" class="btn btn-danger remove-photo">Hapus</button>
+        </div>`;
+            photoContainer.insertAdjacentHTML('beforeend', newPhoto);
+        });
+
+        // Hapus Foto
+        document.getElementById('photo-container').addEventListener('click', (event) => {
+            if (event.target.classList.contains('remove-photo')) {
+                event.target.closest('.photo-item').remove();
+                updatePhotoPreview();
+            }
+        });
+
+        // Pratinjau Foto
+        document.getElementById('photo-container').addEventListener('change', (event) => {
+            if (event.target.classList.contains('photo-input')) {
+                updatePhotoPreview();
+            }
+        });
+
+        // Fungsi untuk Memperbarui Pratinjau Foto
+        function updatePhotoPreview() {
+            const previewContainer = document.getElementById('photo-preview');
+            previewContainer.innerHTML = ''; // Kosongkan pratinjau sebelumnya
+
+            document.querySelectorAll('.photo-input').forEach((input) => {
+                const file = input.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = e.target.result;
+                        imgElement.alt = file.name;
+                        imgElement.className = 'img-thumbnail me-2 mt-2';
+                        imgElement.style.height = '100px';
+                        previewContainer.appendChild(imgElement);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+
         // Tambah Langkah
         document.getElementById('add-step').addEventListener('click', () => {
             const langkahContainer = document.getElementById('langkah-container');

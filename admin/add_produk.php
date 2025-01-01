@@ -89,7 +89,7 @@ if (!isset($errMsg)) {
         }
 
         if (!isset($errMsg)) {
-            header("Location: index.php?successMsg=Produk berhasil ditambahkan.");
+            header("Location: indexProduk.php?successMsg=Produk berhasil ditambahkan.");
             exit;
         }
     } else {

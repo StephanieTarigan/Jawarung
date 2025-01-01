@@ -1,27 +1,58 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
 <?php
+// Memulai sesi
+session_start();
+
+// Memeriksa apakah pengguna sudah login dan apakah perannya adalah admin
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: /login.php"); // Arahkan ke halaman login jika bukan admin
+    exit();
+}
+
+// Menghubungkan ke file konfigurasi database
 include "../dbconfig.php";
 
-$id = $_GET['id'];
-$sqlFetch = "SELECT * FROM warung WHERE WarungID = $id";
-$result = mysqli_query($conn, $sqlFetch);
-$data = mysqli_fetch_assoc($result);
+// Memeriksa apakah ID Warung tersedia di URL
+if (!isset($_GET['WarungID'])) {
+    header("Location: indexWarung.php?errorMsg=ID Warung tidak ditemukan!");
+    exit();
+}
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btnUpdate'])) {
+$warungID = (int)$_GET['WarungID'];
+
+// Query untuk mendapatkan data warung berdasarkan ID
+$query = "SELECT * FROM warung WHERE WarungID = $warungID";
+$result = $conn->query($query);
+
+if ($result->num_rows === 0) {
+    header("Location: indexWarung.php?errorMsg=Data warung tidak ditemukan!");
+    exit();
+}
+
+$warung = $result->fetch_assoc();
+
+// Memproses data jika tombol simpan ditekan
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btnSimpan'])) {
+    // Mengambil data dari form dan melakukan sanitasi
     $namaWarung = mysqli_real_escape_string($conn, $_POST["NamaWarung"]);
     $alamatWarung = mysqli_real_escape_string($conn, $_POST["AlamatWarung"]);
 
-    $sqlUpdate = "UPDATE warung SET NamaWarung = '$namaWarung', AlamatWarung = '$alamatWarung' WHERE WarungID = $id";
-    $query = mysqli_query($conn, $sqlUpdate);
+    // Query untuk memperbarui data warung
+    $updateQuery = "UPDATE warung 
+                    SET NamaWarung = '$namaWarung', AlamatWarung = '$alamatWarung' 
+                    WHERE WarungID = $warungID";
+    $updateResult = $conn->query($updateQuery);
 
-    if ($query) {
-        header("Location: index.php?successMsg=Warung berhasil diupdate.");
+    if ($updateResult) {
+        header("Location: indexWarung.php?successMsg=Warung berhasil diperbarui.");
         exit;
     } else {
-        $errMsg = "Gagal mengupdate data warung! " . mysqli_error($conn);
+        $errMsg = "Gagal memperbarui data warung! " . mysqli_error($conn);
     }
 }
 
-mysqli_close($conn);
+// Memasukkan template header
 include "../template/main_layout.php";
 ?>
 
@@ -33,17 +64,19 @@ include "../template/main_layout.php";
     <form method="post">
         <div class="mb-3">
             <label for="NamaWarung" class="form-label">Nama Warung</label>
-            <input type="text" class="form-control" id="NamaWarung" name="NamaWarung" value="<?= $data['NamaWarung'] ?>" required>
+            <input type="text" class="form-control" id="NamaWarung" name="NamaWarung" value="<?= htmlspecialchars($warung['NamaWarung']) ?>" required>
         </div>
         <div class="mb-3">
             <label for="AlamatWarung" class="form-label">Alamat Warung</label>
-            <textarea class="form-control" id="AlamatWarung" name="AlamatWarung" required><?= $data['AlamatWarung'] ?></textarea>
+            <textarea class="form-control" id="AlamatWarung" name="AlamatWarung" required><?= htmlspecialchars($warung['AlamatWarung']) ?></textarea>
         </div>
-        <button type="submit" class="btn btn-primary" name="btnUpdate">Update</button>
+        <button type="submit" class="btn btn-primary" name="btnSimpan">Simpan</button>
+        <a href="indexWarung.php" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 
-<?php include "../template/main_footer.php"; 
+<?php include "../template/main_footer.php"; ?>
+<?php
 // Menutup koneksi database
 mysqli_close($conn);
 ?>

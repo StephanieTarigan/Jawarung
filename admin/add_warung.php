@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btnSimpan'])) {
     $query = mysqli_query($conn, $sqlStatement);
 
     if ($query) {
-        header("Location: index.php?successMsg=Warung berhasil ditambahkan.");
+        header("Location: indexWarung.php?successMsg=Warung berhasil ditambahkan.");
         exit;
     } else {
         $errMsg = "Gagal menyimpan data warung! " . mysqli_error($conn);
