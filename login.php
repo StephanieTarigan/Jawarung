@@ -5,9 +5,9 @@ include("dbconfig.php");
 if (isset($_SESSION['valid'])) {
     $role = $_SESSION['role'];
     if ($role === 'admin') {
-        header("Location: admin/index.php");
+        header("Location: ../admin/index.php");
     } else {
-        header("Location: user/index.php");
+        header("Location: ../user/index.php");
     }
     exit();
 }
@@ -83,7 +83,7 @@ if (isset($_POST['submit'])) {
         <div class="row w-100 shadow-lg rounded overflow-hidden" style="max-width: 900px;">
             <!-- Left Side -->
             <div class="col-md-6 bg-custom-green text-white p-4 d-flex flex-column justify-content-center">
-                <h2 class="fw-bold">Change the Quality of Your Life</h2>
+                <h2 class="fw-bold">Welcome to Jawarung</h2>
                 <p>A balanced diet and smart stats will fill your life with happiness and joy.</p>
                 <img src="stats-image-placeholder.png" alt="Stats Info" class="img-fluid mt-3">
             </div>

@@ -12,27 +12,28 @@ if (!isset($_SESSION['role'])) {
 include "../dbconfig.php";
 include "../template/main_layout.php";
 
-// Query untuk Produk
-$queryProduk = "
-    SELECT 
-        p.NamaProduk, 
-        p.DeskripsiProduk, 
-        fp.FotoPath 
-    FROM produk p
-    LEFT JOIN fotoProduk fp ON p.ProdukID = fp.ProdukID
-";
+// Query untuk mengambil produk dari database
+$queryProduk = "SELECT produk.ProdukID, produk.NamaProduk, produk.DeskripsiProduk, produk.Harga, fotoproduk.FotoPath 
+                FROM produk 
+                LEFT JOIN fotoproduk ON produk.ProdukID = fotoproduk.ProdukID 
+                GROUP BY produk.ProdukID";
 $resultProduk = mysqli_query($conn, $queryProduk);
 
-// Query untuk Resep
-$queryResep = "
-    SELECT 
-        r.NamaResep, 
-        r.DeskripsiResep, 
-        fr.FotoPath 
-    FROM resep r
-    LEFT JOIN fotoresep fr ON r.ResepID = fr.ResepID
-";
+if (!$resultProduk) {
+    die("Query Error Produk: " . mysqli_error($conn));
+}
+
+// Query untuk mengambil resep dari database
+$queryResep = "SELECT resep.ResepID, resep.NamaResep, resep.DeskripsiResep, fotoresep.FotoPath 
+               FROM resep 
+               LEFT JOIN fotoresep ON resep.ResepID = fotoresep.ResepID 
+               GROUP BY resep.ResepID";
 $resultResep = mysqli_query($conn, $queryResep);
+
+if (!$resultResep) {
+    die("Query Error Resep: " . mysqli_error($conn));
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -92,10 +93,10 @@ $resultResep = mysqli_query($conn, $queryResep);
                                 <div class="col-md-4">
                                     <div class="card h-100">
                                         <?php if (!empty($rowProduk['FotoPath'])): ?>
-                                            <img src="uploads/foto_produk/<?php echo htmlspecialchars($rowProduk['FotoPath']); ?>" 
-                                                 class="card-img-top" alt="Foto Produk" style="object-fit: cover; height: 200px;">
+                                            <img src="<?php echo $rowProduk['FotoPath'] ?: 'uploads/default.jpg'; ?>" 
+                                                class="card-img-top" alt="Foto Produk" style="object-fit: cover; height: 200px;">
                                         <?php else: ?>
-                                            <img src="assets/no-image.jpg" class="card-img-top" alt="No Image" style="object-fit: cover; height: 200px;">
+                                            <img src="admin/<?php echo $row['FotoPath'] ?: 'uploads/default.jpg'; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($row['NamaProduk']); ?>" style="object-fit: cover; height: 200px;">
                                         <?php endif; ?>
                                         <div class="card-body">
                                             <h5 class="card-title"><?php echo htmlspecialchars($rowProduk['NamaProduk']); ?></h5>
@@ -114,10 +115,10 @@ $resultResep = mysqli_query($conn, $queryResep);
                                 <div class="col-md-4">
                                     <div class="card h-100">
                                         <?php if (!empty($rowResep['FotoPath'])): ?>
-                                            <img src="uploads/foto_resep/<?php echo htmlspecialchars($rowResep['FotoPath']); ?>" 
-                                                 class="card-img-top" alt="Foto Resep" style="object-fit: cover; height: 200px;">
+                                            <img src="<?php echo $rowProduk['FotoPath']; ?>" 
+                                                class="card-img-top" alt="Foto Resep" style="object-fit: cover; height: 200px;">
                                         <?php else: ?>
-                                            <img src="assets/no-image.jpg" class="card-img-top" alt="No Image" style="object-fit: cover; height: 200px;">
+                                            <img src="uploads/no-image.jpg" class="card-img-top" alt="No Image" style="object-fit: cover; height: 200px;">
                                         <?php endif; ?>
                                         <div class="card-body">
                                             <h5 class="card-title"><?php echo htmlspecialchars($rowResep['NamaResep']); ?></h5>

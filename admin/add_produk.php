@@ -1,6 +1,4 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="../style.css">
-
 <?php
 // Memulai sesi
 session_start();
@@ -10,6 +8,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: /login.php"); // Arahkan ke halaman login jika bukan admin
     exit();
 }
+
 // Menghubungkan ke file konfigurasi database
 include "../dbconfig.php";
 
@@ -20,74 +19,100 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btnSimpan'])) {
     $deskripsiProduk = mysqli_real_escape_string($conn, $_POST["deskripsiProduk"]);
     $harga = (int)$_POST["harga"];
     $WarungID = (int)$_POST["WarungID"];
+    $SatuanID = (int)$_POST["SatuanID"];
+    $stock = (int)$_POST["stock"];
 
-    // Validasi jika ada foto yang diupload
-    $fotoPaths = [];
-    if (isset($_FILES['fotoProduk']['name']) && !empty($_FILES['fotoProduk']['name'][0])) {
-        $totalFiles = count($_FILES['fotoProduk']['name']);
-        $uploadDir = 'uploads/foto_produk/';
-        
-        // Pastikan folder uploads ada
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
 
-        for ($i = 0; $i < $totalFiles; $i++) {
-            $fileName = $_FILES['fotoProduk']['name'][$i];
-            $fileTmpName = $_FILES['fotoProduk']['tmp_name'][$i];
-            $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+    // Validasi input
+    if (empty($WarungID) || empty($SatuanID)) {
+        $errMsg = "Pilih warung dan satuan yang valid.";
+    } else {
+        // Validasi jika ada foto yang diupload
+        $fotoPaths = [];
+        if (isset($_FILES['fotoProduk']['name']) && !empty($_FILES['fotoProduk']['name'][0])) {
+            $totalFiles = count($_FILES['fotoProduk']['name']);
+            $uploadDir = 'uploads/foto_produk/';
 
-            if (in_array($fileExt, $allowedExtensions)) {
-                // Generate nama file unik
-                $newFileName = uniqid() . '.' . $fileExt;
-                $uploadFile = $uploadDir . $newFileName;
+            // Pastikan folder uploads ada
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
 
-                if (move_uploaded_file($fileTmpName, $uploadFile)) {
-                    $fotoPaths[] = $uploadFile;
+            for ($i = 0; $i < $totalFiles; $i++) {
+                $fileName = $_FILES['fotoProduk']['name'][$i];
+                $fileTmpName = $_FILES['fotoProduk']['tmp_name'][$i];
+                $fileSize = $_FILES['fotoProduk']['size'][$i];
+                $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+
+                if (in_array($fileExt, $allowedExtensions)) {
+                    if ($fileSize <= 2 * 1024 * 1024) { // Batas ukuran 2MB
+                        // Generate nama file unik
+                        $newFileName = uniqid() . '.' . $fileExt;
+                        $uploadFile = $uploadDir . $newFileName;
+
+                        if (move_uploaded_file($fileTmpName, $uploadFile)) {
+                            $fotoPaths[] = $uploadFile;
+                        } else {
+                            $errMsg = "Gagal mengupload foto produk.";
+                            break;
+                        }
+                    } else {
+                        $errMsg = "Ukuran file terlalu besar. Maksimum 2MB.";
+                        break;
+                    }
                 } else {
-                    $errMsg = "Gagal mengupload foto produk.";
+                    $errMsg = "Ekstensi file tidak valid. Hanya JPG, JPEG, PNG yang diperbolehkan.";
                     break;
                 }
-            } else {
-                $errMsg = "Ekstensi file tidak valid. Hanya JPG, JPEG, PNG yang diperbolehkan.";
-                break;
             }
         }
-    }
 
-    // Menyimpan produk ke database jika tidak ada error pada upload foto
-    if (!isset($errMsg)) {
-        $sqlStatement = "INSERT INTO produk (NamaProduk, DeskripsiProduk, Harga, WarungID) 
-                         VALUES ('$namaProduk', '$deskripsiProduk', '$harga', '$WarungID')";
-        $query = mysqli_query($conn, $sqlStatement);
+        // Menyimpan produk ke database jika tidak ada error pada upload foto
+        if (!isset($errMsg)) {
+            $sqlStatement = "INSERT INTO produk (NamaProduk, DeskripsiProduk, Harga, WarungID, SatuanID) 
+                             VALUES ('$namaProduk', '$deskripsiProduk', '$harga', '$WarungID', '$SatuanID', '$stock')";
+            $query = mysqli_query($conn, $sqlStatement);
 
-        if ($query) {
-            $produkID = mysqli_insert_id($conn);
+            if ($query) {
+                $produkID = mysqli_insert_id($conn);
 
-            foreach ($fotoPaths as $fotoPath) {
-                $sqlFoto = "INSERT INTO fotoproduk (ProdukID, FotoPath) 
-                            VALUES ('$produkID', '$fotoPath')";
-                mysqli_query($conn, $sqlFoto);
+                foreach ($fotoPaths as $fotoPath) {
+                    $sqlFoto = "INSERT INTO fotoproduk (ProdukID, FotoPath) 
+                                VALUES ('$produkID', '$fotoPath')";
+                    if (!mysqli_query($conn, $sqlFoto)) {
+                        $errMsg = "Gagal menyimpan foto produk! " . mysqli_error($conn);
+                        break;
+                    }
+                }
+
+                if (!isset($errMsg)) {
+                    header("Location: index.php?successMsg=Produk berhasil ditambahkan.");
+                    exit;
+                }
+            } else {
+                $errMsg = "Gagal menyimpan data produk! " . mysqli_error($conn);
             }
-
-            header("Location: index.php?successMsg=Produk berhasil ditambahkan.");
-            exit;
-        } else {
-            $errMsg = "Gagal menyimpan data produk! " . mysqli_error($conn);
         }
     }
 }
 
+// Query untuk mendapatkan data warung
 $warungQuery = "SELECT WarungID, NamaWarung FROM warung";
 $warungResult = mysqli_query($conn, $warungQuery);
 if (!$warungResult) {
     die("Query gagal: " . mysqli_error($conn));
 }
 
+// Query untuk mendapatkan data satuan
+$satuanQuery = "SELECT SatuanID, NamaSatuan FROM satuan";
+$satuanResult = mysqli_query($conn, $satuanQuery);
+if (!$satuanResult) {
+    die("Query gagal: " . mysqli_error($conn));
+}
 
 // Memasukkan template header
-include ("../template/main_layout.php");
+include("../template/main_layout.php");
 ?>
 
 <!-- Bagian tampilan HTML untuk form -->
@@ -121,12 +146,28 @@ include ("../template/main_layout.php");
             </select>
         </div>
         <div class="mb-3">
+            <label for="SatuanID" class="form-label">Satuan</label>
+            <select class="form-control" id="SatuanID" name="SatuanID" required>
+                <option value="">Pilih Satuan</option>
+                <?php while ($satuan = mysqli_fetch_assoc($satuanResult)): ?>
+                    <option value="<?= htmlspecialchars($satuan['SatuanID']) ?>">
+                        <?= htmlspecialchars($satuan['NamaSatuan']) ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="stock" class="form-label">Stok Produk</label>
+            <input type="number" class="form-control" id="stock" name="stock" value="100" min="0" required>
+        </div>
+        <div class="mb-3">
             <label for="fotoProduk" class="form-label">Foto Produk</label>
             <input type="file" class="form-control" id="fotoProduk" name="fotoProduk[]" multiple required>
         </div>
         <button type="submit" class="btn btn-success" name="btnSimpan">Simpan</button>
     </form>
 </div>
+
 
 <?php include "../template/main_footer.php"; ?>
 <?php
