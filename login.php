@@ -5,7 +5,7 @@ include("dbconfig.php");
 if (isset($_SESSION['valid'])) {
     $role = $_SESSION['role'];
     if ($role === 'admin') {
-        header("Location: ../admin/index.php");
+        header("Location: ../admin/beranda.php");
     } else {
         header("Location: ../user/index.php");
     }
@@ -24,13 +24,13 @@ if (isset($_POST['submit'])) {
             $_SESSION['valid'] = $row['Email'];
             $_SESSION['UserID'] = $row['UserID'];
             $_SESSION['Username'] = $row['Username'];
-            $_SESSION['role'] = $row['Role'];
+            $_SESSION['role'] = $row['role'];
 
             // Redirect based on role
             if ($_SESSION['role'] === 'admin') {
-                header("Location: admin/index.php");
+                header("Location: admin/beranda.php");
             } else {
-                header("Location: user/index.php");
+                header("Location: user/beranda.php");
             }
             exit();
         } else {

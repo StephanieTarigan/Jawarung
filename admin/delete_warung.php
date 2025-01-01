@@ -1,7 +1,7 @@
 <?php
 include "../dbconfig.php";
 
-$id = $_GET['id'];
+$id = $_GET['WarungID'];
 
 $sqlDelete = "DELETE FROM warung WHERE WarungID = $id";
 $query = mysqli_query($conn, $sqlDelete);

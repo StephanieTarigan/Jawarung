@@ -1,5 +1,4 @@
 <?php
-// Memulai sesi
 session_start();
 
 // Periksa apakah pengguna sudah login
@@ -11,6 +10,33 @@ if (!isset($_SESSION['role'])) {
 // Hubungkan ke database
 include "../dbconfig.php";
 include "../template/main_layout.php";
+
+// Query untuk menghitung pendapatan total
+$queryPendapatanTotal = "SELECT SUM(TotalPesanan) AS total_pendapatan FROM pesanan";
+$resultPendapatanTotal = mysqli_query($conn, $queryPendapatanTotal);
+$pendapatanTotal = 0;
+if ($resultPendapatanTotal) {
+    $row = mysqli_fetch_assoc($resultPendapatanTotal);
+    $pendapatanTotal = $row['total_pendapatan'] ?? 0;
+}
+
+// Query untuk menghitung jumlah pesanan baru
+$queryPesananBaru = "SELECT COUNT(*) AS total_pesanan_baru FROM pesanan WHERE StatusPesanan = 'Diproses'";
+$resultPesananBaru = mysqli_query($conn, $queryPesananBaru);
+$pesananBaru = 0;
+if ($resultPesananBaru) {
+    $row = mysqli_fetch_assoc($resultPesananBaru);
+    $pesananBaru = $row['total_pesanan_baru'] ?? 0;
+}
+
+// Query untuk menghitung rata-rata pendapatan
+$queryRataPendapatan = "SELECT AVG(TotalPesanan) AS rata_rata_pendapatan FROM pesanan";
+$resultRataPendapatan = mysqli_query($conn, $queryRataPendapatan);
+$rataRataPendapatan = 0;
+if ($resultRataPendapatan) {
+    $row = mysqli_fetch_assoc($resultRataPendapatan);
+    $rataRataPendapatan = $row['rata_rata_pendapatan'] ?? 0;
+}
 
 // Query untuk mengambil produk dari database
 $queryProduk = "SELECT produk.ProdukID, produk.NamaProduk, produk.DeskripsiProduk, produk.Harga, fotoproduk.FotoPath 
@@ -60,8 +86,8 @@ if (!$resultResep) {
                             <div class="card">
                                 <div class="card-header text-white" style="background-color: #4a7345;">Pendapatan Total</div>
                                 <div class="card-body">
-                                    <h2 style="color: #4a7345;">Rp90.239.000</h2>
-                                    <p><i class="bi bi-arrow-up text-success"></i> 15% dibanding minggu lalu</p>
+                                    <h2 style="color: #4a7345;">Rp<?= number_format($pendapatanTotal, 0, ',', '.'); ?></h2>
+                                    <p><i class="bi bi-arrow-up text-success"></i> Performa bisnis terlihat stabil</p>
                                 </div>
                             </div>
                         </div>
@@ -69,8 +95,8 @@ if (!$resultResep) {
                             <div class="card">
                                 <div class="card-header text-white" style="background-color: #4a7345;">Pesanan Baru</div>
                                 <div class="card-body">
-                                    <h2 class="text-warning">320</h2>
-                                    <p><i class="bi bi-arrow-down text-danger"></i> 4% dibanding minggu lalu</p>
+                                    <h2 class="text-warning"><?= $pesananBaru; ?></h2>
+                                    <p><i class="bi bi-arrow-up text-success"></i> Pesanan terbaru yang sedang diproses</p>
                                 </div>
                             </div>
                         </div>
@@ -78,29 +104,26 @@ if (!$resultResep) {
                             <div class="card">
                                 <div class="card-header text-white" style="background-color: #4a7345;">Rata-rata Pendapatan</div>
                                 <div class="card-body">
-                                    <h2 style="color: #4a7345;">Rp1.080.000</h2>
-                                    <p><i class="bi bi-arrow-up text-success"></i> 8% dibanding minggu lalu</p>
+                                    <h2 style="color: #4a7345;">Rp<?= number_format($rataRataPendapatan, 0, ',', '.'); ?></h2>
+                                    <p><i class="bi bi-arrow-up text-success"></i> Kinerja keuangan meningkat</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Produk dan Resep -->
+                    <!-- Produk -->
                     <div class="mt-5">
                         <h2>Semua Produk</h2>
                         <div class="row g-3">
                             <?php while ($rowProduk = mysqli_fetch_assoc($resultProduk)): ?>
                                 <div class="col-md-4">
                                     <div class="card h-100">
-                                        <?php if (!empty($rowProduk['FotoPath'])): ?>
-                                            <img src="<?php echo $rowProduk['FotoPath'] ?: 'uploads/default.jpg'; ?>" 
-                                                class="card-img-top" alt="Foto Produk" style="object-fit: cover; height: 200px;">
-                                        <?php else: ?>
-                                            <img src="admin/<?php echo $row['FotoPath'] ?: 'uploads/default.jpg'; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($row['NamaProduk']); ?>" style="object-fit: cover; height: 200px;">
-                                        <?php endif; ?>
+                                        <img src="<?= !empty($rowProduk['FotoPath']) ? htmlspecialchars($rowProduk['FotoPath']) : 'uploads/default.jpg'; ?>"
+                                            class="card-img-top" alt="<?= htmlspecialchars($rowProduk['NamaProduk']); ?>"
+                                            style="object-fit: cover; height: 200px;">
                                         <div class="card-body">
-                                            <h5 class="card-title"><?php echo htmlspecialchars($rowProduk['NamaProduk']); ?></h5>
-                                            <p class="card-text"><?php echo htmlspecialchars($rowProduk['DeskripsiProduk']); ?></p>
+                                            <h5 class="card-title"><?= htmlspecialchars($rowProduk['NamaProduk']); ?></h5>
+                                            <p class="card-text"><?= htmlspecialchars($rowProduk['DeskripsiProduk']); ?></p>
                                         </div>
                                     </div>
                                 </div>
@@ -108,21 +131,19 @@ if (!$resultResep) {
                         </div>
                     </div>
 
+                    <!-- Resep -->
                     <div class="mt-5">
                         <h2>Semua Resep</h2>
                         <div class="row g-3">
                             <?php while ($rowResep = mysqli_fetch_assoc($resultResep)): ?>
                                 <div class="col-md-4">
                                     <div class="card h-100">
-                                        <?php if (!empty($rowResep['FotoPath'])): ?>
-                                            <img src="<?php echo $rowProduk['FotoPath']; ?>" 
-                                                class="card-img-top" alt="Foto Resep" style="object-fit: cover; height: 200px;">
-                                        <?php else: ?>
-                                            <img src="uploads/no-image.jpg" class="card-img-top" alt="No Image" style="object-fit: cover; height: 200px;">
-                                        <?php endif; ?>
+                                        <img src="<?= !empty($rowResep['FotoPath']) ? htmlspecialchars($rowResep['FotoPath']) : 'uploads/no-image.jpg'; ?>"
+                                            class="card-img-top" alt="<?= htmlspecialchars($rowResep['NamaResep']); ?>"
+                                            style="object-fit: cover; height: 200px;">
                                         <div class="card-body">
-                                            <h5 class="card-title"><?php echo htmlspecialchars($rowResep['NamaResep']); ?></h5>
-                                            <p class="card-text"><?php echo htmlspecialchars($rowResep['DeskripsiResep']); ?></p>
+                                            <h5 class="card-title"><?= htmlspecialchars($rowResep['NamaResep']); ?></h5>
+                                            <p class="card-text"><?= htmlspecialchars($rowResep['DeskripsiResep']); ?></p>
                                         </div>
                                     </div>
                                 </div>
@@ -139,6 +160,7 @@ if (!$resultResep) {
 </body>
 
 </html>
+
 <?php
 // Menutup koneksi database
 mysqli_close($conn);

@@ -27,9 +27,8 @@ define('HOST', "http://localhost/webPro2024/jawarung")
         <!-- Show login/register buttons if not logged in -->
         <?php if (isset($_SESSION['UserID'])): ?>
             <div class="user-profile">
-                <img src="../images/profil/<?php echo $_SESSION['foto_profil']; ?>" class="profil-img">
                 <span><?php echo $_SESSION['username']; ?></span>
-                <a href="../logout.php" class="logout-button">Logout</a>
+                <a href="logout.php" class="logout-button">Logout</a>
             </div>
         <?php else: ?>
             <a href="login.php" class="login-button">Masuk</a>

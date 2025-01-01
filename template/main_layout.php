@@ -3,7 +3,6 @@
 if (isset($_SESSION['valid'])) {
     $UserID = $_SESSION['UserID'];  // Mengambil UserID dari session
 
-
     // Query untuk mengambil foto profil
     $query = "SELECT ProfilePicture FROM users WHERE UserID = '$UserID'";
     $result = mysqli_query($conn, $query);
@@ -11,14 +10,14 @@ if (isset($_SESSION['valid'])) {
     if ($result) {
         $row = mysqli_fetch_assoc($result);
         // Ambil path foto profil, jika tidak ada gunakan gambar default
-        $profile_picture = $row['ProfilePicture'] ? $row['ProfilePicture'] : 'uploads/profile_pics/default.jpg';
+        $profile_picture = $row['ProfilePicture'] ? $row['ProfilePicture'] : '../admin/uploads/profile_pics/default.jpg';
     } else {
         // Jika foto profil tidak ditemukan, gunakan foto default
-        $profile_picture = 'uploads/profile_pics/default.jpg';
+        $profile_picture = '../admin/uploads/profile_pics/default.jpg';
     }
 } else {
     // Jika belum login, gunakan foto default
-    $profile_picture = 'uploads/profile_pics/default.jpg';
+    $profile_picture = '../admin/uploads/profile_pics/default.jpg';
 }
 ?>
 
@@ -36,11 +35,18 @@ if (isset($_SESSION['valid'])) {
         <div class="logo">JA <span>Warung</span></div>
         <!-- Navbar -->
         <nav class="navbar">
-            <a href="beranda.php">Beranda</a>
-            <a href="add_produk.php">Produk</a>
-            <a href="add_resep.php">Resep</a>
-            <a href="add_warung.php">Warung</a>
-            <a href="add_pengingat">Pengingat</a>
+            <?php if ($_SESSION['role'] === 'pelanggan'): ?>
+                <a href="beranda.php">Beranda</a>
+                <a href="indexProduk.php">Produk</a>
+                <a href="indexResep.php">Resep</a>
+                <a href="indexPengingat.php">Pengingat</a>
+            <?php else: ?>
+                <a href="beranda.php">Beranda</a>
+                <a href="indexProduk.php">Produk</a>
+                <a href="indexResep.php">Resep</a>
+                <a href="indexWarung.php">Warung</a>
+                <a href="indexPengingat.php">Pengingat</a>
+            <?php endif; ?>
         </nav>
         <input type="text" placeholder="Cari Bahan Masakan/Resep" class="search-bar">
         <div class="cart cart-badge">

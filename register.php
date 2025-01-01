@@ -68,7 +68,7 @@
                         } else {
                             // Insert user with "user" role
                             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                            $insert_query = "INSERT INTO users (username, email, password, role) VALUES ('$username', '$email', '$hashed_password', 'pelanggan')";
+                            $insert_query = "INSERT INTO users (username, email, password, Role) VALUES ('$username', '$email', '$hashed_password', 'pelanggan')";
                             if (mysqli_query($conn, $insert_query)) {
                                 echo "<div class='alert alert-success'>Registration successful! <a href='login.php'>Login Now</a></div>";
                             } else {
