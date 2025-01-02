@@ -122,8 +122,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['KomentarText'])) {
                             <?php $isActive = true; ?>
                             <?php while ($foto = $resultFoto->fetch_assoc()): ?>
                                 <div class="carousel-item <?= $isActive ? 'active' : ''; ?>">
-                                    <img src="<?= !empty($foto['FotoPath']) ? "../admin/" . htmlspecialchars($foto['FotoPath']) : '../admin/uploads/default.jpg'; ?>" 
-                                         class="d-block w-100 rounded" alt="Foto Produk">
+                                    <img src="<?= !empty($foto['FotoPath']) ? "../admin/" . htmlspecialchars($foto['FotoPath']) : '../admin/uploads/default.jpg'; ?>"
+                                        class="d-block w-100 rounded" alt="Foto Produk">
                                 </div>
                                 <?php $isActive = false; ?>
                             <?php endwhile; ?>
@@ -151,65 +151,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['KomentarText'])) {
             <!-- Kanan: Detail Produk -->
             <div class="col-md-8">
                 <h2><?= htmlspecialchars($produk['NamaProduk']); ?></h2>
-                <p><strong>Harga:</strong> 
+                <p><strong>Harga:</strong>
                     <span class="text-danger fw-bold fs-3">Rp<?= number_format($produk['Harga'], 0, ',', '.'); ?></span>
                 </p>
-                <p><strong>Stok:</strong> 
+                <p><strong>Stok:</strong>
                     <span class="badge <?= $produk['stock'] > 0 ? 'bg-success' : 'bg-danger'; ?>">
                         <?= $produk['stock'] > 0 ? 'Tersedia' : 'Habis'; ?>
                     </span>
                 </p>
                 <p><strong>Satuan:</strong> <?= htmlspecialchars($produk['NamaSatuan']); ?></p>
                 <p><strong>Warung:</strong> <?= htmlspecialchars($produk['NamaWarung']); ?></p>
-                <button class="btn btn-success">Beli Sekarang</button>
+
+                <form action="pembayaran.php" method="POST">
+                    <input type="hidden" name="selectedProducts[]" value="<?= $produkID; ?>">
+                    <button type="submit" class="btn btn-success">Beli Sekarang</button>
+                </form>
+
                 <hr>
                 <h5>Deskripsi Produk</h5>
                 <p><?= nl2br(htmlspecialchars($produk['DeskripsiProduk'])); ?></p>
 
                 <hr>
 
-        <!-- Komentar -->
-        <h5>Komentar</h5>
-        <?php if ($resultKomentar->num_rows > 0): ?>
-            <?php while ($komentar = $resultKomentar->fetch_assoc()): ?>
-                <div class="d-flex align-items-start mb-3 border-bottom pb-2">
-                    <img src="<?= !empty($komentar['FotoKomentar']) ? '../uploads/komentar/' . htmlspecialchars($komentar['FotoKomentar']) : '../assets/default-user.png'; ?>" 
-                         alt="Foto Komentar" class="me-3 rounded-circle" style="width: 50px; height: 50px;">
-                    <div>
-                        <strong><?= htmlspecialchars($komentar['Username']); ?></strong>
-                        <div class="text-warning">Rating: <?= htmlspecialchars($komentar['Rating']); ?> / 5</div>
-                        <p class="mb-0"><?= htmlspecialchars($komentar['KomentarText']); ?></p>
-                    </div>
-                </div>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <p>Belum ada komentar.</p>
-        <?php endif; ?>
+                <!-- Komentar -->
+                <h5>Komentar</h5>
+                <?php if ($resultKomentar->num_rows > 0): ?>
+                    <?php while ($komentar = $resultKomentar->fetch_assoc()): ?>
+                        <div class="d-flex align-items-start mb-3 border-bottom pb-2">
+                            <img src="<?= !empty($komentar['FotoKomentar']) ? '../uploads/komentar/' . htmlspecialchars($komentar['FotoKomentar']) : '../assets/default-user.png'; ?>"
+                                alt="Foto Komentar" class="me-3 rounded-circle" style="width: 50px; height: 50px;">
+                            <div>
+                                <strong><?= htmlspecialchars($komentar['Username']); ?></strong>
+                                <div class="text-warning">Rating: <?= htmlspecialchars($komentar['Rating']); ?> / 5</div>
+                                <p class="mb-0"><?= htmlspecialchars($komentar['KomentarText']); ?></p>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p>Belum ada komentar.</p>
+                <?php endif; ?>
 
-        <!-- Form Tambah Komentar -->
-        <h5>Tambahkan Komentar Anda</h5>
-        <form method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="Rating" class="form-label">Rating</label>
-                <select class="form-select" id="Rating" name="Rating" required>
-                    <option value="" disabled selected>Pilih Rating</option>
-                    <option value="1">1 - Sangat Buruk</option>
-                    <option value="2">2 - Buruk</option>
-                    <option value="3">3 - Cukup</option>
-                    <option value="4">4 - Bagus</option>
-                    <option value="5">5 - Sangat Bagus</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="KomentarText" class="form-label">Komentar</label>
-                <textarea class="form-control" id="KomentarText" name="KomentarText" rows="3" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="FotoKomentar" class="form-label">Upload Foto (Opsional)</label>
-                <input type="file" class="form-control" id="FotoKomentar" name="FotoKomentar" accept="image/*">
-            </div>
-            <button type="submit" class="btn btn-success">Kirim Komentar</button>
-        </form>
+                <!-- Form Tambah Komentar -->
+                <h5>Tambahkan Komentar Anda</h5>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="Rating" class="form-label">Rating</label>
+                        <select class="form-select" id="Rating" name="Rating" required>
+                            <option value="" disabled selected>Pilih Rating</option>
+                            <option value="1">1 - Sangat Buruk</option>
+                            <option value="2">2 - Buruk</option>
+                            <option value="3">3 - Cukup</option>
+                            <option value="4">4 - Bagus</option>
+                            <option value="5">5 - Sangat Bagus</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="KomentarText" class="form-label">Komentar</label>
+                        <textarea class="form-control" id="KomentarText" name="KomentarText" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="FotoKomentar" class="form-label">Upload Foto (Opsional)</label>
+                        <input type="file" class="form-control" id="FotoKomentar" name="FotoKomentar" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn btn-success">Kirim Komentar</button>
+                </form>
             </div>
         </div>
     </div>

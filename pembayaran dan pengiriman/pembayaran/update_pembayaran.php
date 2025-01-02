@@ -1,5 +1,5 @@
 <?php
-require '../db_connection.php';
+require '../dbconfig.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $paymentId = $_POST['payment_id'];
