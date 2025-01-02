@@ -50,8 +50,13 @@ if (isset($_SESSION['valid'])) {
         </nav>
         <input type="text" placeholder="Cari Bahan Masakan/Resep" class="search-bar">
         <div class="cart cart-badge">
-            <i class="bi bi-cart"></i>
-        </div>
+    <a href="keranjang.php" style="text-decoration: none; color: inherit;">
+        <i class="bi bi-cart"></i>
+    </a>
+</div>
+
+
+
         <div class="profile-section">
             <a href="profil.php" class="profile-link">
                 <img src="<?php echo $profile_picture; ?>" alt="Profil" class="profile-image">

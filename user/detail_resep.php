@@ -219,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['KomentarText'])) {
                     <h5 class="modal-title" id="detailHargaModalLabel">Detail Harga</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="checkout.php" method="POST">
+                <form action="pembayaran.php" method="POST">
                     <div class="modal-body">
                         <?php
                         $resultBahan->data_seek(0); // Reset pointer

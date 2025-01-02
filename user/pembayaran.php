@@ -1,27 +1,49 @@
 <?php
 session_start();
 
+// Konfigurasi database
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "highdsd";
+
+// Membuat koneksi ke database
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Memeriksa koneksi
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
+}
+
 // Inisialisasi total bayar
 $totalBayar = 0;
 
 // Periksa jika keranjang ada di sesi
 if (isset($_SESSION['keranjang']) && !empty($_SESSION['keranjang'])) {
     foreach ($_SESSION['keranjang'] as $item) {
-        $ProdukID = $item['ProdukID'];
-        $kuantitas = $item['kuantitas'];
+        $ProdukID = intval($item['ProdukID']);
+        $kuantitas = intval($item['kuantitas']);
         $harga = 0;
 
-        // Data produk (contoh, lebih baik ambil dari database)
-        if ($ProdukID == 1) $harga = 15000;
-        if ($ProdukID == 2) $harga = 5000;
-        if ($ProdukID == 3) $harga = 45000;
+        // Mengambil harga produk dari database
+        $stmt = $conn->prepare("SELECT Harga FROM produk WHERE ProdukID = ?");
+        $stmt->bind_param("i", $ProdukID);
+        $stmt->execute();
+        $stmt->bind_result($harga);
+        $stmt->fetch();
+        $stmt->close();
 
-        $totalBayar += $harga * $kuantitas;
+        if ($harga > 0 && $kuantitas > 0) {
+            $totalBayar += $harga * $kuantitas;
+        }
     }
 }
 
 // Simpan total harga ke sesi untuk penggunaan lebih lanjut
 $_SESSION['total_bayar'] = $totalBayar;
+
+// Menutup koneksi
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +53,7 @@ $_SESSION['total_bayar'] = $totalBayar;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembayaran</title>
     <style>
-      body {
+        body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
             padding: 20px;
@@ -70,8 +92,7 @@ $_SESSION['total_bayar'] = $totalBayar;
         button:hover {
             background-color: #1e7e34;
         }
-</style>
-
+    </style>
 </head>
 <body>
     <h1>Form Pembayaran</h1>

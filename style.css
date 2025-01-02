@@ -295,7 +295,9 @@ main {
 }
 
 /* Cart Icon Styling */
+/* Cart Icon Styling */
 .cart {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -318,16 +320,31 @@ main {
 }
 
 .cart-badge::after {
-    content: '0';  /* Default item count in cart */
+    content: '<?php echo isset($_SESSION['keranjang']) ? count($_SESSION['keranjang']) : 0; ?>';
     position: absolute;
-    top: -8px;
-    right: -8px;
+    top: -10px; /* Adjust the badge's vertical position */
+    right: -10px; /* Adjust the badge's horizontal position */
     background-color: red;
     color: white;
     border-radius: 50%;
     padding: 2px 6px;
-    font-size: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px; /* Ensures the badge is a circle */
+    height: 18px; /* Ensures the badge is a circle */
+    line-height: 1; /* Centers the text inside the badge */
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5); /* Optional: Adds a subtle shadow */
 }
+
+.cart-badge:hover::after {
+    background-color: darkred;
+    transform: scale(1.1);
+}
+
+
 
 /* Profile Image */
 .profile-section {
